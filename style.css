@@ -1,68 +1,72 @@
 body, html {
-    height: 100%;
     margin: 0;
-    padding: 20px; /* Add padding to avoid content touching the edges */
+    padding: 0;
     font-family: 'Arial', sans-serif;
-    background: #f0f0f0; /* Light gray background for simplicity */
-    display: block; /* Change display to block for natural flow */
+    background: #f0f0f0; /* Consistent background for all screen sizes */
 }
 
 .container {
-    width: 100%; /* Allow container to use full width on smaller screens */
-    max-width: 400px; /* Maximum width for larger screens */
-    margin: 0 auto; /* Center in the middle of the page horizontally */
-    padding: 20px;
+    box-sizing: border-box;
+    padding: 10px; /* Reduced padding on smaller screens for more space */
+    margin: 10px; /* Margin to prevent content from touching the screen edges */
     background: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align: left;
+    max-width: 100%; /* Allows container to expand to the edges */
 }
 
 label {
     display: block;
-    margin-top: 20px;
+    margin-top: 15px; /* Adjusted spacing for compactness */
     color: #333;
-    font-size: 16px;
+    font-size: 14px; /* Slightly smaller font for labels on small screens */
 }
 
 input[type="number"], select {
     width: 100%;
-    padding: 10px;
+    padding: 8px; /* Slightly reduced padding */
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 16px;
+    font-size: 14px; /* Adjusted for readability on small screens */
 }
 
 button {
     display: block;
     width: 100%;
-    padding: 12px;
-    margin-top: 20px;
+    padding: 10px; /* Comfortable touch target size */
+    margin-top: 15px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+    font-size: 14px; /* Consistent font size with inputs */
 }
 
 .clock-display {
-    font-size: 1.5em;
-    margin-top: 20px;
+    font-size: 1.2em; /* Adjusted for visibility */
+    margin-top: 15px;
     background: #f0f0f0;
     padding: 10px;
     border-radius: 5px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     text-align: center;
+}
+
+/* Media Query for Larger Screens */
+@media (min-width: 600px) {
+    .container {
+        margin: 20px auto; /* Center the container on larger screens */
+        padding: 20px; /* More padding for a spacious layout */
+        max-width: 400px; /* Max width to prevent too wide of a layout */
+    }
+
+    label, input[type="number"], select, button {
+        font-size: 16px; /* Larger font for readability on bigger screens */
+    }
+
+    .clock-display {
+        font-size: 2em; /* Larger clock display */
+    }
 }
