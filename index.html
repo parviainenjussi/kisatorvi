@@ -6,27 +6,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<div class="container">
-		<label for="startingSeconds">Starting Seconds:</label>
-		<input type="number" id="startingSeconds" value="10">
-		
-		<label for="interval">Interval (Seconds):</label>
-		<input type="number" id="interval" value="120">
-		
-		<label for="totalTime">Total Time (Seconds):</label>
-		<input type="number" id="totalTime" value="3600">
-		
-		<label for="hornSoundSelect">Horn Sound:</label>
-		<select id="hornSoundSelect">
-			<option value="horn.wav">Horn Sound</option>
-			<option value="vaihto.wav">Vaihto Sound</option>
-		</select>
-		
-		<button id="startButton">Start</button>
-		<button id="playHornButton">Play Horn Sound</button>
-		<button id="stopButton">Stop</button>
-		<div id="elapsedTime" class="clock-display">Elapsed Time: 00:00</div>
-	</div>
+    <div class="container">
+        <label for="startingSeconds">Starting Seconds:</label>
+        <input type="number" id="startingSeconds" value="10">
+        
+        <label for="interval">Interval (Seconds):</label>
+        <input type="number" id="interval" value="120">
+        
+        <label for="totalTime">Total Time (Seconds):</label>
+        <input type="number" id="totalTime" value="3600">
+        
+        <label for="hornSoundSelect">Horn Sound:</label>
+        <select id="hornSoundSelect">
+            <option value="horn.wav">Horn Sound</option>
+            <option value="vaihto.wav">Vaihto Sound</option>
+        </select>
+        
+        <button id="startButton">Start</button>
+        <button id="playHornButton">Play Horn Sound</button>
+        <button id="stopButton">Stop</button>
+        <div id="elapsedTime" class="clock-display">Elapsed Time: 00:00</div>
+        <div id="nextHornTime" class="next-horn-display">Next Horn Sound at: --:--</div>
+    </div>
 
     <script src="script.js"></script>
 </body>

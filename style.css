@@ -70,3 +70,11 @@ button {
         font-size: 2em; /* Larger clock display */
     }
 }
+.next-horn-display {
+    font-size: 1.2em;
+    margin-top: 15px;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
