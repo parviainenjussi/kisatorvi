@@ -51,9 +51,10 @@ function scheduleNextHorn(intervalSeconds) {
 startButton.addEventListener('click', function() {
     const startingSeconds = parseInt(startingSecondsInput.value);
     const intervalSeconds = parseInt(intervalInput.value);
-    const totalGameTimeSeconds = parseInt(totalTimeInput.value);
+    // Total time the timer should run from the start point
+    const totalGameTimeSeconds = parseInt(totalTimeInput.value) - startingSeconds;
 
-    gameStartTime = Date.now() - startingSeconds * 1000;
+    gameStartTime = Date.now();
     startButton.disabled = true;
     stopButton.disabled = false;
 
@@ -67,9 +68,10 @@ startButton.addEventListener('click', function() {
 
     scheduleNextHorn(intervalSeconds);
 
+    // Schedule the timer to stop after the adjusted total time
     setTimeout(() => {
         resetTimer();
-    }, totalGameTimeSeconds * 1000);
+    }, totalGameTimeSeconds * 1000); // Adjusted to consider the starting time
 });
 
 function resetTimer() {
