@@ -51,18 +51,22 @@ function scheduleNextHorn(intervalSeconds) {
 startButton.addEventListener('click', function() {
     const startingSeconds = parseInt(startingSecondsInput.value);
     const intervalSeconds = parseInt(intervalInput.value);
-    
+    const totalGameTimeSeconds = parseInt(totalTimeInput.value);
+
     gameStartTime = Date.now() - startingSeconds * 1000;
     startButton.disabled = true;
     stopButton.disabled = false;
+
+    // Disable inputs while the timer is running
+    startingSecondsInput.disabled = true;
+    intervalInput.disabled = true;
+    totalTimeInput.disabled = true;
 
     updateElapsedTime();
     elapsedTimeId = setInterval(updateElapsedTime, 1000);
 
     scheduleNextHorn(intervalSeconds);
 
-    // Use totalGameTimeSeconds to schedule a final timer reset
-    const totalGameTimeSeconds = parseInt(totalTimeInput.value);
     setTimeout(() => {
         resetTimer();
     }, totalGameTimeSeconds * 1000);
@@ -73,6 +77,12 @@ function resetTimer() {
     clearInterval(elapsedTimeId);
     startButton.disabled = false;
     stopButton.disabled = true;
+
+    // Re-enable inputs when the timer is stopped
+    startingSecondsInput.disabled = false;
+    intervalInput.disabled = false;
+    totalTimeInput.disabled = false;
+
     elapsedTimeDiv.textContent = "00:00/--:--"; // Reset to default display
     nextHornTimeDiv.textContent = "Next Horn Sound at: --:--";
 }
