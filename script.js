@@ -69,7 +69,7 @@ startButton.addEventListener('click', function() {
 
     setTimeout(() => {
         resetTimer();
-    }, totalGameTimeSeconds * 1000);
+    }, totalGameTimeSeconds * 1000 - startingSeconds * 1000);
 });
 
 function resetTimer() {
