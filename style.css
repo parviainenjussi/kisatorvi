@@ -1,3 +1,4 @@
+/* Base styles */
 body, html {
     margin: 0;
     padding: 0;
@@ -45,7 +46,7 @@ button {
     font-size: 14px; /* Consistent font size with inputs */
 }
 
-.clock-display {
+.clock-display, .next-horn-display {
     font-size: 1.2em; /* Adjusted for visibility */
     margin-top: 15px;
     background: #f0f0f0;
@@ -66,15 +67,25 @@ button {
         font-size: 16px; /* Larger font for readability on bigger screens */
     }
 
-    .clock-display {
+    .clock-display, .next-horn-display {
         font-size: 2em; /* Larger clock display */
     }
 }
-.next-horn-display {
-    font-size: 1.2em;
-    margin-top: 15px;
-    background: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
+
+/* Media Query for Mobile Devices */
+@media (max-width: 600px) {
+    .container {
+        margin: 10px; /* Small margin to prevent content from touching the screen edges */
+        width: calc(100% - 20px); /* Fill available width accounting for margin */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+
+    label, input[type="number"], select, button {
+        font-size: 16px; /* Larger font for readability on small screens */
+        margin-top: 5px; /* Adjusted margin */
+    }
+
+    .clock-display, .next-horn-display {
+        font-size: 1.5em; /* Adjusted for readability on small screens */
+    }
 }
