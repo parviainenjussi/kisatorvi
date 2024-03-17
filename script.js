@@ -7,6 +7,7 @@ const totalTimeInput = document.getElementById('totalTime');
 const elapsedTimeDiv = document.getElementById('elapsedTime');
 const nextHornTimeDiv = document.getElementById('nextHornTime');
 const hornSoundSelect = document.getElementById('hornSoundSelect');
+const clockDirectionSelect = document.getElementById('clockDirection');
 
 let hornSound = new Audio(); // Initialize the Audio object outside to allow dynamic source changes
 let nextHornTimeoutId, elapsedTimeId, gameStartTime;
@@ -19,14 +20,24 @@ function formatTime(seconds) {
 }
 
 function updateElapsedTime() {
-    const elapsedTimeInSeconds = (Date.now() - gameStartTime) / 1000;
-    const formattedElapsedTime = formatTime(elapsedTimeInSeconds);
+    const currentTime = Date.now();
+    const elapsedTimeInSeconds = (currentTime - gameStartTime) / 1000;
     const totalGameTimeSeconds = parseInt(totalTimeInput.value);
+    const clockDirection = clockDirectionSelect.value;
+
+    let displayTimeSeconds;
+
+    if (clockDirection === 'up') {
+        displayTimeSeconds = elapsedTimeInSeconds;
+    } else { // 'down'
+        displayTimeSeconds = totalGameTimeSeconds - elapsedTimeInSeconds;
+    }
+
+    const formattedDisplayTime = formatTime(Math.abs(displayTimeSeconds));
     const formattedTotalTime = formatTime(totalGameTimeSeconds);
-    
-    // Now displays only the formatted times without "Elapsed Time:" text
-    elapsedTimeDiv.textContent = `${formattedElapsedTime}/${formattedTotalTime}`;
+    elapsedTimeDiv.textContent = `${formattedDisplayTime}/${formattedTotalTime}`;
 }
+
 
 function playSelectedHornSound() {
     hornSound.src = hornSoundSelect.value; // Dynamically set the horn sound source based on selection
@@ -36,9 +47,26 @@ function playSelectedHornSound() {
 function scheduleNextHorn(intervalSeconds) {
     const currentTime = Date.now();
     const elapsedTimeInSeconds = (currentTime - gameStartTime) / 1000;
-    const nextHornInSeconds = intervalSeconds - (elapsedTimeInSeconds % intervalSeconds);
-    const nextHornElapsedTime = elapsedTimeInSeconds + nextHornInSeconds;
-    const formattedNextHornTime = formatTime(nextHornElapsedTime);
+    const clockDirection = clockDirectionSelect.value;
+    let nextHornInSeconds;
+
+    if (clockDirection === 'up') {
+        nextHornInSeconds = intervalSeconds - (elapsedTimeInSeconds % intervalSeconds);
+    }
+    if (clockDirection === 'down') {
+        // Assuming the game started with a total time and counts down.
+        const totalGameTimeSeconds = parseInt(totalTimeInput.value);
+        const elapsedTimeInSeconds = (Date.now() - gameStartTime) / 1000;
+        // This is the time since the game started (including the initial offset).
+        const remainingTime = totalGameTimeSeconds - elapsedTimeInSeconds;
+        // Calculate when the next horn should sound based on the remaining time and the interval.
+        nextHornInSeconds = remainingTime % intervalSeconds;
+        if (nextHornInSeconds === 0) nextHornInSeconds = intervalSeconds; // This ensures the horn plays at the interval boundary.
+    }
+
+
+    const nextHornElapsedTime = clockDirection === 'up' ? elapsedTimeInSeconds + nextHornInSeconds : parseInt(totalTimeInput.value) - nextHornInSeconds - elapsedTimeInSeconds % intervalSeconds;
+    const formattedNextHornTime = formatTime(Math.floor(nextHornElapsedTime));
 
     nextHornTimeDiv.textContent = `Next Horn Sound at: ${formattedNextHornTime}`;
 
@@ -61,6 +89,7 @@ startButton.addEventListener('click', function() {
     startingSecondsInput.disabled = true;
     intervalInput.disabled = true;
     totalTimeInput.disabled = true;
+    clockDirectionSelect.disabled = true;
 
     updateElapsedTime();
     elapsedTimeId = setInterval(updateElapsedTime, 1000);
@@ -82,6 +111,7 @@ function resetTimer() {
     startingSecondsInput.disabled = false;
     intervalInput.disabled = false;
     totalTimeInput.disabled = false;
+    clockDirectionSelect.disabled = false;
 
     elapsedTimeDiv.textContent = "00:00/--:--"; // Reset to default display
     nextHornTimeDiv.textContent = "Next Horn Sound at: --:--";
