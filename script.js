@@ -37,13 +37,17 @@ startButton.addEventListener('click', function() {
     totalTimeInput.disabled = true;
     clockDirectionSelect.disabled = true;
 
+    // Add here program time length
+    const programTIme = parseFloat(totalTimeInput.value) * 60 - parseFloat(startingSecondsInput.value)
+
     elapsedTimeId = setInterval(checkAndPlayHorn, 1000); // Check every second
 
     // Ensure that the timer stops at the total game time
     setTimeout(() => {
         resetTimer();
-    }, parseFloat(totalTimeInput.value) * 60 * 1000); // Convert minutes to milliseconds
+    }, pprogramTIme * 1000); // Convert minutes to milliseconds
 });
+
 // Helper function to format time from seconds to MM:SS format
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
