@@ -7,12 +7,21 @@ const totalTimeInput = document.getElementById('totalTime');
 const elapsedTimeDiv = document.getElementById('elapsedTime');
 const nextHornTimeDiv = document.getElementById('nextHornTime');
 const hornSoundSelect = document.getElementById('hornSoundSelect');
+const clockDirectionSelect = document.getElementById('clockDirection');
+
 
 let hornSound = new Audio(); // Initialize the Audio object outside to allow dynamic source changes
-let nextHornTimeoutId, elapsedTimeId, gameStartTime;
+let nextHornTimeoutId, elapsedTimeId, gameStartTime, clockDirectionValue, totalGameTimeSeconds;
 
 // Helper function to format time from seconds to MM:SS format
 function formatTime(seconds) {
+    if (clockDirectionValue === 'down') {
+        seconds = totalGameTimeSeconds - seconds;
+    }
+    return formatTotalTime(seconds);
+}
+
+function formatTotalTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${minutes}:${secs}`;
@@ -21,8 +30,8 @@ function formatTime(seconds) {
 function updateElapsedTime() {
     const elapsedTimeInSeconds = (Date.now() - gameStartTime) / 1000;
     const formattedElapsedTime = formatTime(elapsedTimeInSeconds);
-    const totalGameTimeSeconds = parseInt(totalTimeInput.value);
-    const formattedTotalTime = formatTime(totalGameTimeSeconds);
+    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
+    const formattedTotalTime = formatTotalTime(totalGameTimeSeconds);
     
     // Now displays only the formatted times without "Elapsed Time:" text
     elapsedTimeDiv.textContent = `${formattedElapsedTime}/${formattedTotalTime}`;
@@ -51,7 +60,8 @@ function scheduleNextHorn(intervalSeconds) {
 startButton.addEventListener('click', function() {
     const startingSeconds = parseInt(startingSecondsInput.value);
     const intervalSeconds = parseInt(intervalInput.value);
-    const totalGameTimeSeconds = parseInt(totalTimeInput.value);
+    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
+    clockDirectionValue = clockDirectionSelect.value;
 
     gameStartTime = Date.now() - startingSeconds * 1000;
     startButton.disabled = true;
@@ -61,6 +71,7 @@ startButton.addEventListener('click', function() {
     startingSecondsInput.disabled = true;
     intervalInput.disabled = true;
     totalTimeInput.disabled = true;
+    clockDirectionSelect.disabled = true;
 
     updateElapsedTime();
     elapsedTimeId = setInterval(updateElapsedTime, 1000);
@@ -82,10 +93,42 @@ function resetTimer() {
     startingSecondsInput.disabled = false;
     intervalInput.disabled = false;
     totalTimeInput.disabled = false;
+    clockDirectionSelect.disabled = false;
 
-    elapsedTimeDiv.textContent = "00:00/--:--"; // Reset to default display
-    nextHornTimeDiv.textContent = "Next Horn Sound at: --:--";
+    updateVisualizedTimes();
 }
+
+function updateVisualizedTimes() {
+    const startingSeconds = parseInt(startingSecondsInput.value);
+    const intervalSeconds = parseInt(intervalInput.value);
+    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
+    clockDirectionValue = clockDirectionSelect.value;
+
+    const elapsedTimeInSeconds =  startingSeconds;
+    const formattedElapsedTime = formatTime(elapsedTimeInSeconds);
+    const formattedTotalTime = formatTotalTime(totalGameTimeSeconds);
+    
+    // Now displays elapsed/total tme
+    elapsedTimeDiv.textContent = `${formattedElapsedTime}/${formattedTotalTime}`;
+
+    const nextHornInSeconds = intervalSeconds - (elapsedTimeInSeconds % intervalSeconds);
+    const nextHornElapsedTime = elapsedTimeInSeconds + nextHornInSeconds;
+    const formattedNextHornTime = formatTime(nextHornElapsedTime);
+
+    nextHornTimeDiv.textContent = `Next Horn Sound at: ${formattedNextHornTime}`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // This code runs when the page is fully loaded
+    updateVisualizedTimes(); // Replace 'yourFunction' with the name of your function
+    // Add more event listeners if you have more inputs
+    // Set up change event listeners for each input box
+    document.getElementById('startingSeconds').addEventListener('change', updateVisualizedTimes);
+    document.getElementById('interval').addEventListener('change', updateVisualizedTimes);
+    document.getElementById('totalTime').addEventListener('change', updateVisualizedTimes);
+    document.getElementById('clockDirection').addEventListener('change', updateVisualizedTimes);
+});
+    
 
 stopButton.addEventListener('click', resetTimer);
 
