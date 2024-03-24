@@ -20,7 +20,7 @@ function formatTime(seconds) {
     if (clockDirectionValue === 'down') {
         seconds = totalGameTimeSeconds - seconds;
     }
-    return formatTotalTime(seconds);
+    return formatElapsedTime(seconds);
 }
 
 function formatTotalTime(seconds) {
@@ -28,6 +28,18 @@ function formatTotalTime(seconds) {
     const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${minutes}:${secs}`;
 }
+
+function formatElapsedTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    let secs;
+    if (clockDirectionValue === 'up'){
+        secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+    }else{
+        secs = Math.ceil(seconds % 60).toString().padStart(2, '0');
+    }
+    return `${minutes}:${secs}`;
+}
+
 
 function updateElapsedTime(elapsedTimeInSeconds) {
     const formattedElapsedTime = formatTime(elapsedTimeInSeconds);
