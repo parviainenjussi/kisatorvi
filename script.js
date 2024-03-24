@@ -11,7 +11,9 @@ const clockDirectionSelect = document.getElementById('clockDirection');
 
 
 let hornSound = new Audio(); // Initialize the Audio object outside to allow dynamic source changes
-let nextHornTimeoutId, elapsedTimeId, gameStartTime, clockDirectionValue, totalGameTimeSeconds;
+let nextHornTimeoutId, elapsedTimeId, gameStartTimeMsec, clockDirectionValue;
+let totalGameTimeSeconds, intervalSeconds, startingSeconds;
+let nextHornTimeSeconds;
 
 // Helper function to format time from seconds to MM:SS format
 function formatTime(seconds) {
@@ -27,12 +29,9 @@ function formatTotalTime(seconds) {
     return `${minutes}:${secs}`;
 }
 
-function updateElapsedTime() {
-    const elapsedTimeInSeconds = (Date.now() - gameStartTime) / 1000;
+function updateElapsedTime(elapsedTimeInSeconds) {
     const formattedElapsedTime = formatTime(elapsedTimeInSeconds);
-    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
     const formattedTotalTime = formatTotalTime(totalGameTimeSeconds);
-    
     // Now displays only the formatted times without "Elapsed Time:" text
     elapsedTimeDiv.textContent = `${formattedElapsedTime}/${formattedTotalTime}`;
 }
@@ -42,49 +41,51 @@ function playSelectedHornSound() {
     hornSound.play();
 }
 
-function scheduleNextHorn(intervalSeconds) {
-    const currentTime = Date.now();
-    const elapsedTimeInSeconds = (currentTime - gameStartTime) / 1000;
-    const nextHornInSeconds = intervalSeconds - (elapsedTimeInSeconds % intervalSeconds);
-    const nextHornElapsedTime = elapsedTimeInSeconds + nextHornInSeconds;
-    const formattedNextHornTime = formatTime(nextHornElapsedTime);
-
-    nextHornTimeDiv.textContent = `Next Horn Sound at: ${formattedNextHornTime}`;
-
-    nextHornTimeoutId = setTimeout(() => {
-        playSelectedHornSound();
-        scheduleNextHorn(intervalSeconds);
-    }, nextHornInSeconds * 1000);
-}
-
 startButton.addEventListener('click', function() {
-    const startingSeconds = parseInt(startingSecondsInput.value);
-    const intervalSeconds = parseInt(intervalInput.value);
+    startingSeconds = parseInt(startingSecondsInput.value);
+    intervalSeconds = parseInt(intervalInput.value);
     totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
     clockDirectionValue = clockDirectionSelect.value;
 
-    gameStartTime = Date.now() - startingSeconds * 1000;
-    startButton.disabled = true;
-    stopButton.disabled = false;
+    nextHornTimeSeconds = intervalSeconds;
 
-    // Disable inputs while the timer is running
+    gameStartTimeMsec = Date.now() - startingSeconds * 1000;
+
+    stopButton.disabled = false;
+    startButton.disabled = true;
     startingSecondsInput.disabled = true;
     intervalInput.disabled = true;
     totalTimeInput.disabled = true;
     clockDirectionSelect.disabled = true;
 
-    updateElapsedTime();
-    elapsedTimeId = setInterval(updateElapsedTime, 1000);
-
-    scheduleNextHorn(intervalSeconds);
-
-    setTimeout(() => {
-        resetTimer();
-    }, totalGameTimeSeconds * 1000 - startingSeconds * 1000);
+    // Start the repeating timer
+    elapsedTimeId = setInterval(checkAndPlayHorn, 100);
 });
 
+function checkAndPlayHorn() {
+    const elapsedTimeInSeconds = (Date.now() - gameStartTimeMsec) / 1000;
+    
+    // Update elapsed time display
+    updateElapsedTime(elapsedTimeInSeconds); // Implement this function to update your UI with the elapsed time
+
+    // Check if it's time to play the horn
+    if (elapsedTimeInSeconds >= nextHornTimeSeconds) {
+        playSelectedHornSound();
+        nextHornTimeSeconds += intervalSeconds; // Schedule next horn time
+        updateNextHornTimeDisplay(nextHornTimeSeconds); // Update your UI with the new next horn time
+    }
+
+    if (elapsedTimeInSeconds >= totalGameTimeSeconds){
+        resetTimer();
+    }
+}
+
+function updateNextHornTimeDisplay(nextHornTime){
+    const formattedNextHornTime = formatTime(nextHornTime);
+    nextHornTimeDiv.textContent = `Next Horn Sound at: ${formattedNextHornTime}`;
+}
+
 function resetTimer() {
-    clearTimeout(nextHornTimeoutId);
     clearInterval(elapsedTimeId);
     startButton.disabled = false;
     stopButton.disabled = true;
@@ -99,8 +100,8 @@ function resetTimer() {
 }
 
 function updateVisualizedTimes() {
-    const startingSeconds = parseInt(startingSecondsInput.value);
-    const intervalSeconds = parseInt(intervalInput.value);
+    startingSeconds = parseInt(startingSecondsInput.value);
+    intervalSeconds = parseInt(intervalInput.value);
     totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
     clockDirectionValue = clockDirectionSelect.value;
 
