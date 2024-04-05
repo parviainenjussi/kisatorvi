@@ -24,20 +24,31 @@ function formatTime(seconds) {
 }
 
 function formatTotalTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
+    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
     const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${minutes}:${secs}`;
 }
 
 function formatElapsedTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
+    let minutes;
     let secs;
     if (clockDirectionValue === 'up'){
-        secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+		minutes = Math.floor(seconds / 60);
+        secs = Math.floor(seconds % 60);
     }else{
-        secs = Math.ceil(seconds % 60).toString().padStart(2, '0');
+		minutes = Math.floor(seconds / 60);
+        secs = Math.ceil(seconds % 60);
     }
-    return `${minutes}:${secs}`;
+	   if (secs >= 60) {
+		minutes += 1; // Increase minute
+		secs -= 60; // Decrease seconds by 60 to start from 0
+    }
+
+    // Formatting minutes and seconds to ensure two digits
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedSeconds = secs.toString().padStart(2, '0');
+	
+    return `${formattedMinutes}:${formattedSeconds}`;
 }
 
 
@@ -54,12 +65,12 @@ function playSelectedHornSound() {
 }
 
 startButton.addEventListener('click', function() {
-    startingSeconds = parseInt(startingSecondsInput.value);
-    intervalSeconds = parseInt(intervalInput.value);
-    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
+    startingSeconds = parseFloat(startingSecondsInput.value);
+    intervalSeconds = parseFloat(intervalInput.value);
+    totalGameTimeSeconds = parseFloat(totalTimeInput.value) * 60;
     clockDirectionValue = clockDirectionSelect.value;
 
-    nextHornTimeSeconds = intervalSeconds;
+    nextHornTimeSeconds = startingSeconds > 0 ? Math.ceil(startingSeconds / intervalSeconds) * intervalSeconds : intervalSeconds;
 
     gameStartTimeMsec = Date.now() - startingSeconds * 1000;
 
@@ -80,8 +91,12 @@ function checkAndPlayHorn() {
     // Update elapsed time display
     updateElapsedTime(elapsedTimeInSeconds); // Implement this function to update your UI with the elapsed time
 
+    if (totalGameTimeSeconds - 1.0 < nextHornTimeSeconds) {
+        nextHornTimeSeconds = Infinity;
+        nextHornTimeDiv.textContent = `Next Horn Sound at: --:--`;
+
     // Check if it's time to play the horn
-    if (elapsedTimeInSeconds >= nextHornTimeSeconds) {
+    }else if (elapsedTimeInSeconds >= nextHornTimeSeconds) {
         playSelectedHornSound();
         nextHornTimeSeconds += intervalSeconds; // Schedule next horn time
         updateNextHornTimeDisplay(nextHornTimeSeconds); // Update your UI with the new next horn time
@@ -112,9 +127,9 @@ function resetTimer() {
 }
 
 function updateVisualizedTimes() {
-    startingSeconds = parseInt(startingSecondsInput.value);
-    intervalSeconds = parseInt(intervalInput.value);
-    totalGameTimeSeconds = parseInt(totalTimeInput.value) * 60;
+    startingSeconds = parseFloat(startingSecondsInput.value);
+    intervalSeconds = parseFloat(intervalInput.value);
+    totalGameTimeSeconds = parseFloat(totalTimeInput.value) * 60;
     clockDirectionValue = clockDirectionSelect.value;
 
     const elapsedTimeInSeconds =  startingSeconds;
@@ -124,9 +139,8 @@ function updateVisualizedTimes() {
     // Now displays elapsed/total tme
     elapsedTimeDiv.textContent = `${formattedElapsedTime}/${formattedTotalTime}`;
 
-    const nextHornInSeconds = intervalSeconds - (elapsedTimeInSeconds % intervalSeconds);
-    const nextHornElapsedTime = elapsedTimeInSeconds + nextHornInSeconds;
-    const formattedNextHornTime = formatTime(nextHornElapsedTime);
+    nextHornTimeSeconds = startingSeconds > 0 ? Math.ceil(startingSeconds / intervalSeconds) * intervalSeconds : intervalSeconds;
+    const formattedNextHornTime = formatTime(nextHornTimeSeconds);
 
     nextHornTimeDiv.textContent = `Next Horn Sound at: ${formattedNextHornTime}`;
 }
