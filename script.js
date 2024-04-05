@@ -91,7 +91,8 @@ function checkAndPlayHorn() {
     // Update elapsed time display
     updateElapsedTime(elapsedTimeInSeconds); // Implement this function to update your UI with the elapsed time
 
-    if (totalGameTimeSeconds == nextHornTimeSeconds) {
+    if (totalGameTimeSeconds - 1.0 < nextHornTimeSeconds) {
+        nextHornTimeSeconds = Infinity;
         nextHornTimeDiv.textContent = `Next Horn Sound at: --:--`;
 
     // Check if it's time to play the horn
